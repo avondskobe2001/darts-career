@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Darts Career Mode — Kobe</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar hidden" id="topbar">
+      <div class="logo">Darts <span>Career</span></div>
+      <div class="topbar-stats">
+        <span id="tb-name">—</span>
+        <span>XP <strong id="tb-xp">0</strong></span>
+        <span>Geld <strong id="tb-money">€0</strong></span>
+        <span>Rang <strong id="tb-rank">#—</strong></span>
+      </div>
+      <nav style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button type="button" class="btn btn-sm btn-ghost" id="nav-hub">Hub</button>
+        <button type="button" class="btn btn-sm btn-ghost" id="nav-upgrade">Upgraden</button>
+        <button type="button" class="btn btn-sm btn-ghost" id="nav-tour">Toernooien</button>
+        <button type="button" class="btn btn-sm btn-ghost" id="nav-stats">Stats</button>
+      </nav>
+    </header>
+
+    <!-- SPLASH -->
+    <section class="screen active" id="screen-splash">
+      <div class="splash">
+        <div class="splash-logo">🎯 Darts <span>Career</span></div>
+        <p class="splash-sub">Word een PDC-ster. Train je skills, klim door de toernooien en daag echte namen uit — van Challenge Tour tot Ally Pally.</p>
+        <div class="create-form">
+          <label for="player-name">Spelernaam</label>
+          <input type="text" id="player-name" maxlength="24" value="Kobe" placeholder="Jouw naam" />
+          <div class="btn-row">
+            <button type="button" class="btn btn-primary btn-block" id="btn-start">Nieuwe carrière</button>
+          </div>
+          <div class="btn-row hidden" id="btn-continue-wrap">
+            <button type="button" class="btn btn-secondary btn-block hidden" id="btn-continue">
+              Doorspelen (<span id="continue-name"></span>)
+            </button>
+          </div>
+        </div>
+        <p class="footer-note">v1 · Offline · Opslaan in browser · nl-BE</p>
+      </div>
+    </section>
+
+    <!-- HUB -->
+    <section class="screen" id="screen-hub">
+      <div class="hero">
+        <h1 id="hub-greeting">Welkom</h1>
+        <span class="rank-badge" id="hub-rank">Rang #—</span>
+        <div class="stat-pills" id="hub-pills"></div>
+        <p class="mt-1 muted">Overall skill <strong id="hub-skill">0</strong> · <span id="hub-record">0W–0L</span> · <span id="hub-xp">0 XP</span></p>
+        <p class="muted" style="font-size:.85rem;margin-top:.35rem">Titels: <span id="hub-titles">—</span></p>
+        <div class="btn-row" style="justify-content:center">
+          <button type="button" class="btn btn-primary" id="nav-tour-hub" onclick="document.getElementById('nav-tour').click()">Toernooi spelen</button>
+          <button type="button" class="btn btn-gold" onclick="document.getElementById('nav-upgrade').click()">XP upgraden</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Recente wedstrijden</h2>
+        <div id="hub-history"></div>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-reset">Carrière wissen</button>
+      </div>
+    </section>
+
+    <!-- UPGRADE -->
+    <section class="screen" id="screen-upgrade">
+      <div class="panel">
+        <h2>⚡ Skills upgraden</h2>
+        <p class="muted">Beschikbare XP: <strong id="upg-xp" style="color:var(--gold)">0</strong> — investeer slim; hogere levels kosten meer.</p>
+        <div id="upgrade-list" class="mt-1"></div>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('nav-hub').click()">← Terug naar hub</button>
+      </div>
+    </section>
+
+    <!-- TOURNAMENTS -->
+    <section class="screen" id="screen-tournaments">
+      <div class="panel">
+        <h2>🏆 Toernooikalender</h2>
+        <p class="muted">Start laag, klim naar de majors. Sterkere velden = meer XP & ranking points.</p>
+        <div class="grid-2 mt-1" id="tour-list"></div>
+      </div>
+    </section>
+
+    <!-- BRACKET -->
+    <section class="screen" id="screen-bracket">
+      <div class="panel">
+        <h2 id="bracket-title">Toernooi</h2>
+        <p><span class="rank-badge" id="bracket-round">Ronde</span> · <span class="muted" id="bracket-alive"></span></p>
+        <ul class="bracket-list mt-1" id="bracket-list"></ul>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="btn-play-match">Start wedstrijd</button>
+          <button type="button" class="btn btn-ghost" onclick="document.getElementById('nav-hub').click()">Opgeven (naar hub)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MATCH -->
+    <section class="screen" id="screen-match">
+      <p class="center muted" id="match-round-label">Match</p>
+      <div class="match-layout">
+        <div class="panel scoreboard you">
+          <div class="player-name" id="m-you-name">Jij</div>
+          <div class="remaining" id="m-you-rem">501</div>
+          <div class="legs">Legs <b id="m-you-legs">0</b> / <span id="m-legs-need">3</span></div>
+        </div>
+
+        <div class="board-wrap">
+          <canvas id="dartboard" width="320" height="320" aria-label="Dartbord"></canvas>
+          <div id="timing-wrap">
+            <div class="timing-bar-wrap">
+              <div class="timing-marker"></div>
+              <div class="timing-bar" id="timing-bar"></div>
+            </div>
+            <p class="aim-hint center">Timing: midden = nauwkeuriger</p>
+          </div>
+          <div class="throw-info" id="throw-info"></div>
+          <div class="dart-pips" id="dart-pips"></div>
+          <div class="center muted" id="visit-score"></div>
+          <div class="center" id="suggest-target" style="font-size:.8rem;color:var(--accent2)"></div>
+          <div class="btn-row" style="justify-content:center">
+            <button type="button" class="btn btn-sm btn-secondary" id="btn-sim-match">Simuleer match</button>
+          </div>
+          <div class="match-log mt-1" id="match-log"></div>
+        </div>
+
+        <div class="panel scoreboard opp">
+          <div class="player-name" id="m-opp-name">Tegenstander</div>
+          <div class="remaining" id="m-opp-rem">501</div>
+          <div class="legs">Legs <b id="m-opp-legs">0</b></div>
+        </div>
+      </div>
+      <!-- hidden unused -->
+      <button type="button" class="hidden" id="btn-sim-leg"></button>
+    </section>
+
+    <!-- RESULT -->
+    <section class="screen" id="screen-result">
+      <div id="result-banner" class="result-banner win">
+        <h1 id="result-title">Resultaat</h1>
+        <p id="result-sub" class="muted"></p>
+        <div class="reward-grid" id="result-rewards"></div>
+      </div>
+      <div class="btn-row" style="justify-content:center">
+        <button type="button" class="btn btn-primary hidden" id="btn-continue-tour">Volgende ronde →</button>
+        <button type="button" class="btn btn-gold" id="btn-result-upgrade">Skills upgraden</button>
+        <button type="button" class="btn btn-secondary" id="btn-result-hub">Naar hub</button>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="screen" id="screen-stats">
+      <div id="stats-body"></div>
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('nav-hub').click()">← Hub</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/dartboard.js"></script>
+  <script src="js/match.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    // show continue wrapper when button visible
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('btn-continue');
+      const obs = new MutationObserver(() => {
+        document.getElementById('btn-continue-wrap').classList.toggle('hidden', btn.classList.contains('hidden'));
+      });
+      obs.observe(btn, { attributes: true, attributeFilter: ['class'] });
+      if (!btn.classList.contains('hidden')) {
+        document.getElementById('btn-continue-wrap').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
